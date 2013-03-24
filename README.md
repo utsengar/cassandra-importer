@@ -1,7 +1,7 @@
 Cassandra Data Impoter
 ===============
 
-A python script which moves casandra data from one cluster to another. I primiarly use to move some chunks of production data in cassandra to local cassandra instance for testing.
+Moves casandra data from one cluster to another. I primiarly use to move some chunks of production data in cassandra to local cassandra instance for testing.
 
 There are other ways you can achive it:   
 	1. [Use cassandra bulk loader][1]  
@@ -18,13 +18,14 @@ How to install cassandra-importer
 
 How to use cassandra-importer?
 ---------------
-`./cass_importer.py -s localhost:9161
-                   -d localhost:9160
-                   -ks myks
-                   -cf mycf
-                   -k 361115111934
-                   -c 100
-                   -a` (where -k, -c and -a are optional)
+    ./cass_importer.py -s localhost:9161
+                       -d localhost:9160
+                       -ks myks
+                       -cf mycf
+                       -k 361115111934
+                       -c 100
+                       -a 
+(where -k, -c and -a are optional)
 
 Example: `./cass_importer.py -s localhost:9161 -d localhost:9160 -ks myks -cf mycf -a`
 
