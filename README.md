@@ -11,8 +11,8 @@ There are other ways you can achive it:
 
 How to install cassandra-importer
 ------------------
-1. Clone or download the project
-2. `python setup.py install'
+1. Clone or download the project: `git clone https://github.com/utkarsh2012/cassandra-importer.git`
+2. Go to the directory: `python setup.py install'
 3. Run `cassandra_importer` with the required flags
 
 
