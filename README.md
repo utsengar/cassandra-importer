@@ -18,7 +18,7 @@ How to install cassandra-importer
 
 How to use cassandra-importer?
 ---------------
-    ./cass_importer.py -s localhost:9161
+    ./cass_importer.py -s cassandra_server:9161
                        -d localhost:9160
                        -ks myks
                        -cf mycf
@@ -30,6 +30,11 @@ How to use cassandra-importer?
 Example: `./cass_importer.py -s localhost:9161 -d localhost:9160 -ks myks -cf mycf -a`
 
 Note: Make sure you have the keyspace (myks) and column family (mycf) with the same name created in the destination.
+
+If your prod cassandra cannot be accessed directly, you can tunnel in:
+`ssh -i key.pem -L 9161:localhost:9160 user@remote_cassandra_server -N`
+This will port forward the remote cassandra 9160 port to your local 9161.
+
 
   [1]: http://www.datastax.com/dev/blog/bulk-loading
   [2]: http://www.datastax.com/docs/0.7/utilities/sstable2json
