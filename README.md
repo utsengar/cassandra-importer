@@ -29,6 +29,7 @@ How to use cassandra-importer?
 
 Example: `./cass_importer.py -s localhost:9161 -d localhost:9160 -ks myks -cf mycf -a`
 
+Note: Make sure you have the keyspace (myks) and column family (mycf) with the same name created in the destination.
 
   [1]: http://www.datastax.com/dev/blog/bulk-loading
   [2]: http://www.datastax.com/docs/0.7/utilities/sstable2json
