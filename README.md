@@ -44,9 +44,9 @@ How to use cassandra-importer?
     (-k, -c and -a are optional, you need to pass any one of those. Use -a with extreme caution)
 
 Example: 
-`./cass_importer.py -s cassandra_server:9161 -d localhost:9160 -ks myks -cf mycf -c 100`
+`cassandra_importer -s cassandra_server:9161 -d localhost:9160 -ks myks -cf mycf -c 100`
 
-`./cass_importer.py -s localhost:9161 -d localhost:9160 -ks myks -cf mycf -a`
+`cassandra_importer -s localhost:9161 -d localhost:9160 -ks myks -cf mycf -a`
 
 Note: Make sure you have the keyspace (myks) and column family (mycf) with the same name created in the destination.
 
