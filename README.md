@@ -32,9 +32,9 @@ How to use cassandra-importer?
                             Cassandra path where you need your data:
                             localhost:9160
       -ks KEYSPACE, --keyspace KEYSPACE
-                            The keyspace: rlcatalogks
+                            The keyspace: myks
       -cf COLUMN_FAMILY, --column_family COLUMN_FAMILY
-                            The Column family: prodinfo
+                            The Column family: mycf
       -k KEY, --key KEY     A specific key to be imported
       -c COUNT, --count COUNT
                             Total count of keys to be imported
