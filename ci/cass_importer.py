@@ -1,6 +1,8 @@
 #!/usr/bin/python
+# -*- coding: utf-8 -*-
 
-from pycassa import ConnectionPool, ColumnFamily, InvalidRequestException
+from pycassa import ConnectionPool, ColumnFamily
+import pycassa
 import argparse
 import sys
 
@@ -45,11 +47,14 @@ class CassandraImporter:
                                               [args["destination"]])
             self.source_cf = ColumnFamily(source_pool,
                                           args["column_family"])
+            self.source_cf.default_validation_class = pycassa.types.UTF8Type()
             self.destination_cf = ColumnFamily(destination_pool,
                                                args["column_family"])
+            self.destination_cf.default_validation_class = pycassa.types.UTF8Type()
         except Exception as e:
             print "ERROR: The keyspace or the column family does not \
                     exist or request is timing out!"
+            print e
             sys.exit()
 
         #Optional data
@@ -83,7 +88,8 @@ class CassandraImporter:
             for value in self.source_cf.get_range(column_count=0,
                                                   filter_empty=False):
                 column_data = self.source_cf.get(value[0])
-                data[value[0]] = column_data
+                key = value[0].encode('utf-8')
+                data[key] = column_data
         else:
             print "Please pass -c or -k or -a arguments!"
 
