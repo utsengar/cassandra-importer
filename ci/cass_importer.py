@@ -54,7 +54,6 @@ class CassandraImporter:
         except Exception as e:
             print "ERROR: The keyspace or the column family does not \
                     exist or request is timing out!"
-            print e
             sys.exit()
 
         #Optional data
