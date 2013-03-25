@@ -50,6 +50,9 @@ Example:
 
 Note: Make sure you have the keyspace (myks) and column family (mycf) with the same name created in the destination.
 
+Create KS: CREATE KEYSPACE myks;
+Create CF: CREATE COLUMN FAMILY mycf;
+
 If your prod cassandra cannot be accessed directly, you can tunnel in:
 `ssh -i key.pem -L 9161:localhost:9160 user@remote_cassandra_server -N`
 This will port forward the remote cassandra 9160 port to your local 9161.
