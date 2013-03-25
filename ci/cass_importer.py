@@ -1,10 +1,11 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 
-from pycassa import ConnectionPool, ColumnFamily
+from pycassa import ConnectionPool, ColumnFamily, NotFoundException
 import pycassa
 import argparse
 import sys
+import time
 
 
 class CassandraImporter:
@@ -47,10 +48,18 @@ class CassandraImporter:
                                               [args["destination"]])
             self.source_cf = ColumnFamily(source_pool,
                                           args["column_family"])
+            self.source_cf.autopack_names = False
+            self.source_cf.autopack_values = False
+            self.source_cf.autopack_keys = False
             self.source_cf.default_validation_class = pycassa.types.UTF8Type()
+
             self.destination_cf = ColumnFamily(destination_pool,
                                                args["column_family"])
+            self.destination_cf.autopack_names = False
+            self.destination_cf.autopack_values = False
+            self.destination_cf.autopack_keys = False
             self.destination_cf.default_validation_class = pycassa.types.UTF8Type()
+
         except Exception as e:
             print "ERROR: The keyspace or the column family does not \
                     exist or request is timing out!"
@@ -70,15 +79,25 @@ class CassandraImporter:
             column_data = self.source_cf.get(self.key)
             data[self.key] = column_data
 
-        #Get last 100 keys and their columns
+        #Get last x keys and their columns
         elif self.count:
             counter = 0
+            error_count = 0
             for value in self.source_cf.get_range(column_count=0,
                                                   filter_empty=False):
                 if(counter < self.count):
-                    column_data = self.source_cf.get(value[0])
-                    data[value[0]] = column_data
-                    counter += 1
+                    try:
+                        column_data = self.source_cf.get(value[0])
+                        data[value[0]] = column_data
+                        counter += 1
+                    except NotFoundException:
+                        error_count += 1
+                        if error_count > 10:
+                            print "ERROR: Cassandra is too slow to read so fast! Exiting.."
+                            sys.exit()
+
+                        #Use this to throttle reads from cassandra
+                        time.sleep(0.2)
                 else:
                     break
 
@@ -87,7 +106,7 @@ class CassandraImporter:
             for value in self.source_cf.get_range(column_count=0,
                                                   filter_empty=False):
                 column_data = self.source_cf.get(value[0])
-                key = value[0].encode('utf-8')
+                key = value[0]
                 data[key] = column_data
         else:
             print "Please pass -c or -k or -a arguments!"
