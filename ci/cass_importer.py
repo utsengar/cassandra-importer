@@ -61,8 +61,7 @@ class CassandraImporter:
             self.destination_cf.default_validation_class = pycassa.types.UTF8Type()
 
         except Exception as e:
-            print "ERROR: The keyspace or the column family does not \
-                    exist or request is timing out!"
+            print "ERROR: The keyspace or the column family does not exist or request is timing out!"
             sys.exit()
 
         #Optional data
