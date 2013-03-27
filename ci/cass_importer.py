@@ -12,12 +12,12 @@ class CassandraImporter:
     def __init__(self):
         parser = argparse.ArgumentParser(description='Process some integers.')
         parser.add_argument('-s', '--source',
-                            help='Generally the prod cassandra path: \
-                            localhost:9161',
+                            help='Generally the prod cassandra path, list of machines: \
+                            localhost:9162 localhost:9163', nargs='*',
                             required=True)
         parser.add_argument('-d', '--destination',
                             help='Cassandra path where you need your data: \
-                            localhost:9160',
+                            localhost:9160 localhost:9161', nargs='*',
                             required=True)
         parser.add_argument('-ks', '--keyspace',
                             help='The keyspace: myks',
@@ -43,9 +43,9 @@ class CassandraImporter:
 
         try:
             source_pool = ConnectionPool(args["keyspace"],
-                                         [args["source"]])
+                                         args["source"])
             destination_pool = ConnectionPool(args["keyspace"],
-                                              [args["destination"]])
+                                              args["destination"])
             self.source_cf = ColumnFamily(source_pool,
                                           args["column_family"])
             self.source_cf.autopack_names = False
@@ -64,7 +64,7 @@ class CassandraImporter:
             print "ERROR: The keyspace or the column family does not exist or request is timing out!"
             sys.exit()
 
-        #Optional data
+        # Optional data
         self.count = args["count"]
         if self.count:
             self.count = int(self.count)
@@ -73,12 +73,12 @@ class CassandraImporter:
 
     def importData(self):
         data = dict()
-        #Get columns for a key
+        # Get columns for a key
         if self.key:
             column_data = self.source_cf.get(self.key)
             data[self.key] = column_data
 
-        #Get last x keys and their columns
+        # Get last x keys and their columns
         elif self.count:
             counter = 0
             error_count = 0
@@ -86,21 +86,26 @@ class CassandraImporter:
                                                   filter_empty=False):
                 if(counter < self.count):
                     try:
-                        column_data = self.source_cf.get(value[0])
+                        column_data = self.source_cf.get(value[0], column_count=1)
                         data[value[0]] = column_data
                         counter += 1
                     except NotFoundException:
+                        #Ignore keys with empty columns
+                        pass
+                    except Exception:
                         error_count += 1
                         if error_count > 10:
-                            print "ERROR: Cassandra is too slow to read so fast! Exiting.."
+                            # Write the read data
+                            self.insertData(data)
+                            print "ERROR: Remote cassandra is too slow to read, exiting after writing..."
                             sys.exit()
 
-                        #Use this to throttle reads from cassandra
+                        # Use this to throttle reads from cassandra
                         time.sleep(0.2)
                 else:
                     break
 
-        #Get All, Not recommended
+        # Get All, Not recommended
         elif self.all:
             for value in self.source_cf.get_range(column_count=0,
                                                   filter_empty=False):
@@ -113,6 +118,7 @@ class CassandraImporter:
         return data
 
     def insertData(self, data):
+        print "Writing " + str(len(data.keys())) + " keys"
         for key, value in data.iteritems():
             self.destination_cf.insert(key, value)
 
