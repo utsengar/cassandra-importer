@@ -86,7 +86,7 @@ class CassandraImporter:
                                                   filter_empty=False):
                 if(counter < self.count):
                     try:
-                        column_data = self.source_cf.get(value[0], column_count=1)
+                        column_data = self.source_cf.get(value[0], column_count=100)
                         data[value[0]] = column_data
                         counter += 1
                     except NotFoundException:
@@ -136,5 +136,10 @@ class CassandraImporter:
 
 
 def runner():
+    importer = CassandraImporter()
+    importer.run()
+
+
+if __name__ == "__main__":
     importer = CassandraImporter()
     importer.run()
