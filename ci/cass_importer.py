@@ -120,6 +120,7 @@ class CassandraImporter:
     def insertData(self, data):
         print "Writing " + str(len(data.keys())) + " keys"
         for key, value in data.iteritems():
+            value = dict((k, str(v)) for k, v in value.iteritems())
             self.destination_cf.insert(key, value)
 
     def run(self):
